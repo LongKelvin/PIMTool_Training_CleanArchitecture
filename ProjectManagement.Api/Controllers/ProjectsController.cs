@@ -15,9 +15,10 @@ namespace ProjectManagement.Api.Controllers
         private readonly IMediator _mediator = mediator;
 
         [HttpGet]
-        public async Task<ActionResult<Project>> GetAllAsync()
+        public async Task<ActionResult<Project>> GetAllAsync([FromQuery] bool? enableEagerLoading)
         {
-            var projects = await _mediator.Send(new GetAllProjectQuery());
+            var projects = await _mediator.Send(
+                new GetAllProjectQuery { EnableEagerLoading = enableEagerLoading ?? false });
             if (projects == null)
                 return NotFound();
 

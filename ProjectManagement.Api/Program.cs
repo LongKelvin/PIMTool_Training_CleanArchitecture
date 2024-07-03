@@ -68,6 +68,7 @@ namespace ProjectManagement.Api
                     }
                     else
                     {
+                        dbContext.Database.EnsureCreatedAsync();
                         dbContext.Database.Migrate();
                     }
 
