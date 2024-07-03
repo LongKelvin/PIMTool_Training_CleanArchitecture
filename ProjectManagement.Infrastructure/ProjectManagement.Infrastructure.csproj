@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Data\PersistenceModels\" />
+    <Compile Remove="Data\PersistenceModels\**" />
+    <EmbeddedResource Remove="Data\PersistenceModels\**" />
+    <None Remove="Data\PersistenceModels\**" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,43 +7,40 @@ namespace ProjectManagement.Infrastructure.Data.DataContext
     public class PIMToolDbContext(DbContextOptions<PIMToolDbContext> options) : DbContext(options)
     {
         public DbSet<Project> Projects { get; set; }
-        public DbSet<ProjectEmployee> ProjectEmployees { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Domain.Entities.Group> Groups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Project>()
-                .HasKey(p => p.Id);
-
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.Group)
-                .WithMany(g => g.Projects)
-                .HasForeignKey(p => p.GroupId);
-
-            modelBuilder.Entity<ProjectEmployee>()
-                .HasKey(pe => new { pe.ProjectId, pe.EmployeeId });
-
-            modelBuilder.Entity<ProjectEmployee>()
-                .HasOne(pe => pe.Project)
-                .WithMany(p => p.ProjectEmployees)
-                .HasForeignKey(pe => pe.ProjectId);
-
-            modelBuilder.Entity<ProjectEmployee>()
-                .HasOne(pe => pe.Employee)
-                .WithMany(e => e.ProjectEmployees)
-                .HasForeignKey(pe => pe.EmployeeId);
-
-            modelBuilder.Entity<Employee>()
-                .HasKey(e => e.Id);
-
-            modelBuilder.Entity<Group>()
-                .HasKey(g => g.Id);
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Group>()
                 .HasOne(g => g.GroupLeader)
-                .WithMany()
-                .HasForeignKey(g => g.GroupLeaderId);
+                .WithOne()
+                .HasForeignKey<Group>(g => g.GroupLeaderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Group>()
+                .HasMany(g => g.Projects)
+                .WithOne(p => p.Group)
+                .HasForeignKey(p => p.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Project>()
+             .HasMany(p => p.Employees)
+             .WithMany(e => e.Projects)
+             .UsingEntity<Dictionary<string, object>>(
+                 "ProjectEmployee",
+                 j => j.HasOne<Employee>().WithMany().HasForeignKey("EmployeeId"),
+                 j => j.HasOne<Project>().WithMany().HasForeignKey("ProjectId"));
+
+            modelBuilder.Entity<Project>()
+                .Property(p => p.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Employee>()
+                .Property(e => e.Timestamp)
+                .IsRowVersion();
         }
     }
 }

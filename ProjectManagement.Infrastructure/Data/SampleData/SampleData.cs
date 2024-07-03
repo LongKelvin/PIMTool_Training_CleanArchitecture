@@ -24,19 +24,15 @@ namespace ProjectManagement.Infrastructure.Data.SampleData
         {
             if (!context.Employees.Any())
             {
-                var listEmployees = new List<Employee>();
-
-                for (int i = 0; i < 100; i++)
+                var listEmployees = new List<Employee>
                 {
-                    listEmployees.Add(new Employee
-                    {
-                        Visa = GenerateRandomString(3),
-                        FirstName = $"FirstName{i}",
-                        LastName = $"LastName{i}",
-                        BirthDate = GenerateRandomDate(new DateTime(1980, 1, 1),
-                        new DateTime(2000, 1, 1))
-                    });
-                }
+                    new() { Visa = "ABC", FirstName = "John", LastName = "Doe", BirthDate = new DateTime(1990, 1, 1) },
+                    new(){ Visa = "DEF", FirstName = "Jane", LastName = "Smith", BirthDate = new DateTime(1985, 5, 23) },
+                    new() { Visa = "GHI", FirstName = "Mike", LastName = "Johnson", BirthDate = new DateTime(1978, 8, 12) },
+                     new() { Visa = "JKL", FirstName = "Emily", LastName = "Davis", BirthDate = new DateTime(1982, 3, 15) },
+                     new() { Visa = "MNO", FirstName = "David", LastName = "Wilson", BirthDate = new DateTime(1995, 11, 30) },
+                     new() { Visa = "PQR", FirstName = "Sophia", LastName = "Martinez", BirthDate = new DateTime(1988, 7, 7) }
+                };
 
                 context.Employees.AddRange(listEmployees);
                 context.SaveChanges();
@@ -53,16 +49,14 @@ namespace ProjectManagement.Infrastructure.Data.SampleData
                 }
 
                 var listEmployees = context.Employees.ToList();
-                var listGroups = new List<Group>();
-
-                for (int i = 0; i < 10; i++)
+                var listGroups = new List<Group>
                 {
-                    listGroups.Add(new Group
-                    {
-                        GroupLeaderId = listEmployees[random.Next(listEmployees.Count)].Id,
-                        Name = $"Group{i}"
-                    });
-                }
+                    new() { GroupLeaderId = listEmployees[0].Id, Name = "Phoenix" },
+                    new() { GroupLeaderId = listEmployees[1].Id, Name = "Atlas Vanguard " },
+                    new() { GroupLeaderId = listEmployees[2].Id, Name = "Wolfpack Collective" },
+                    new() { GroupLeaderId = listEmployees[3].Id, Name = "Nexus" },
+                    new() { GroupLeaderId = listEmployees[4].Id, Name = "Spark" }
+                };
 
                 context.Groups.AddRange(listGroups);
                 context.SaveChanges();
@@ -86,18 +80,29 @@ namespace ProjectManagement.Infrastructure.Data.SampleData
                 var listGroups = context.Groups.ToList();
                 var listProjects = new List<Project>();
 
-                for (int i = 0; i < 50; i++)
+                for (int i = 0; i < 10; i++)
                 {
-                    listProjects.Add(new Project
+                    var project = new Project
                     {
                         GroupId = listGroups[random.Next(listGroups.Count)].Id,
                         ProjectNumber = 1000 + i,
-                        Name = $"Project {i}",
-                        Customer = $"Customer {i}",
-                        Status = ((ProjectStatus)random.Next(0, 3)).ToString(),
+                        Name = $"Project {GetProjectName(i)}",
+                        Customer = $"Customer {GetCustomerName(i)}",
+                        Status = ((ProjectStatus)random.Next(0, 4)).ToString(),
                         StartDate = GenerateRandomDate(new DateTime(2024, 1, 1), new DateTime(2024, 12, 31)),
                         EndDate = i % 2 == 0 ? (DateTime?)null : GenerateRandomDate(new DateTime(2024, 6, 1), new DateTime(2025, 12, 31))
-                    });
+                    };
+
+                    // Assign random employees to the project
+                    var listEmployees = context.Employees.ToList();
+                    int numberOfEmployees = random.Next(1, 10);
+                    for (int j = 0; j < numberOfEmployees; j++)
+                    {
+                        var employee = listEmployees[random.Next(listEmployees.Count)];
+                        project.Employees.Add(employee);
+                    }
+
+                    listProjects.Add(project);
                 }
 
                 context.Projects.AddRange(listProjects);
@@ -105,10 +110,16 @@ namespace ProjectManagement.Infrastructure.Data.SampleData
             }
         }
 
-        private static string GenerateRandomString(int length)
+        private static string GetProjectName(int index)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+            var projectNames = new[] { "Apollo", "Hermes", "Zeus", "Athena", "Poseidon", "Artemis", "Ares", "Hera", "Demeter", "Hades" };
+            return projectNames[index % projectNames.Length];
+        }
+
+        private static string GetCustomerName(int index)
+        {
+            var customerNames = new[] { "Acme Corp", "Globex Inc", "Soylent Corp", "Initech", "Umbrella Corp", "Wayne Enterprises", "Stark Industries", "Oscorp", "LexCorp", "Aperture Science" };
+            return customerNames[index % customerNames.Length];
         }
 
         private static DateTime GenerateRandomDate(DateTime start, DateTime end)

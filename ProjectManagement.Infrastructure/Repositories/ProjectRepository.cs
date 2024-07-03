@@ -12,14 +12,14 @@ namespace ProjectManagement.Infrastructure.Repositories
 
         public async Task<Project?> GetByIdAsync(Guid id)
         {
-            return await _context.Projects.Include(p => p.ProjectEmployees)
+            return await _context.Projects.Include(p => p.Employees)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<Project>> SearchAsync(string keyword)
         {
             return await _context.Projects
-                .Include(p => p.ProjectEmployees)
+                .Include(p => p.Employees)
                 .Where(p => p.Name.Contains(keyword) || p.Customer.Contains(keyword))
                 .ToListAsync();
         }
@@ -43,11 +43,16 @@ namespace ProjectManagement.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Project>> GetAllAsync()
+        public async Task<IEnumerable<Project>> GetAllAsync(bool eagerLoading = false)
         {
-            return await _context.Projects
-                .Include(p => p.ProjectEmployees)
-                .ToListAsync();
+            IQueryable<Project> query = context.Projects.AsNoTracking();
+
+            if (eagerLoading)
+            {
+                query = query.Include(p => p.Employees);
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

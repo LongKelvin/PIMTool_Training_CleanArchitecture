@@ -6,7 +6,7 @@ namespace ProjectManagement.Application.Interfaces
     {
         Task<Project?> GetByIdAsync(Guid id);
 
-        Task<IEnumerable<Project>> GetAllAsync();
+        Task<IEnumerable<Project>> GetAllAsync(bool eagerLoading = false);
 
         Task<IEnumerable<Project>> SearchAsync(string keyword);
 

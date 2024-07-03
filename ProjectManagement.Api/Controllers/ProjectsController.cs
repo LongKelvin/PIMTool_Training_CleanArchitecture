@@ -38,6 +38,10 @@ namespace ProjectManagement.Api.Controllers
         public async Task<ActionResult<IEnumerable<Project>>> SearchProjects([FromQuery] string keyword)
         {
             var projects = await _mediator.Send(new SearchProjectsQuery { Keyword = keyword });
+
+            if (!projects.Any())
+                return NotFound();
+
             return Ok(projects);
         }
 

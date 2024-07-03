@@ -7,14 +7,14 @@
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
 
-        public ICollection<ProjectEmployee> ProjectEmployees { get; private set; }
+        public ICollection<Project> Projects { get; set; }
 
         public Employee()
         {
             Visa = string.Empty;
             FirstName = string.Empty;
             LastName = string.Empty;
-            ProjectEmployees = [];
+            Projects = [];
         } // EF Core requires an empty constructor
 
         public Employee(string visa, string firstName, string lastName, DateTime birthDate)
@@ -23,7 +23,7 @@
             FirstName = firstName;
             LastName = lastName;
             BirthDate = birthDate;
-            ProjectEmployees = [];
+            Projects = [];
         }
     }
 }
