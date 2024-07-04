@@ -13,7 +13,7 @@ namespace ProjectManagement.Application.Queries.Handlers
 
         public async Task<IEnumerable<Project>> Handle(GetAllProjectQuery request, CancellationToken cancellationToken)
         {
-            return await _projectRepository.GetAllAsync();
+            return await _projectRepository.GetAllAsync(cancellationToken: cancellationToken);
         }
     }
 }

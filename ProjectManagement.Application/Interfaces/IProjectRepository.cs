@@ -2,18 +2,7 @@
 
 namespace ProjectManagement.Application.Interfaces
 {
-    public interface IProjectRepository
+    public interface IProjectRepository : IRepository<Project>
     {
-        Task<Project?> GetByIdAsync(Guid id);
-
-        Task<IEnumerable<Project>> GetAllAsync(bool eagerLoading = false);
-
-        Task<IEnumerable<Project>> SearchAsync(string keyword);
-
-        Task AddAsync(Project project);
-
-        Task UpdateAsync(Project project);
-
-        Task DeleteAsync(Guid id);
     }
 }

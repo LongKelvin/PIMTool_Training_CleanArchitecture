@@ -7,7 +7,7 @@
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
 
-        public ICollection<Project> Projects { get; set; }
+        public virtual ICollection<Project> Projects { get; set; }
 
         public Employee()
         {

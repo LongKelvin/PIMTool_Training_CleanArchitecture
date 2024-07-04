@@ -51,11 +51,11 @@ namespace ProjectManagement.Infrastructure.Data.SampleData
                 var listEmployees = context.Employees.ToList();
                 var listGroups = new List<Group>
                 {
-                    new() { GroupLeaderId = listEmployees[0].Id, Name = "Phoenix" },
-                    new() { GroupLeaderId = listEmployees[1].Id, Name = "Atlas Vanguard " },
-                    new() { GroupLeaderId = listEmployees[2].Id, Name = "Wolfpack Collective" },
-                    new() { GroupLeaderId = listEmployees[3].Id, Name = "Nexus" },
-                    new() { GroupLeaderId = listEmployees[4].Id, Name = "Spark" }
+                    new() { GroupLeaderId = listEmployees[0].Id, Name = "Phoenix", GroupLeader = listEmployees[0] },
+                    new() { GroupLeaderId = listEmployees[1].Id, Name = "Atlas Vanguard" , GroupLeader = listEmployees[1]},
+                    new() { GroupLeaderId = listEmployees[2].Id, Name = "Wolfpack Collective" , GroupLeader = listEmployees[2]},
+                    new() { GroupLeaderId = listEmployees[3].Id, Name = "Nexus" , GroupLeader = listEmployees[3]},
+                    new() { GroupLeaderId = listEmployees[4].Id, Name = "Spark" , GroupLeader = listEmployees[4]}
                 };
 
                 context.Groups.AddRange(listGroups);
@@ -82,12 +82,15 @@ namespace ProjectManagement.Infrastructure.Data.SampleData
 
                 for (int i = 0; i < 10; i++)
                 {
+                    var groupId = listGroups[random.Next(listGroups.Count)].Id;
                     var project = new Project
                     {
-                        GroupId = listGroups[random.Next(listGroups.Count)].Id,
+                        Id = Guid.NewGuid(),
+                        GroupId = groupId,
+                        Group = listGroups.Find(x => x.Id.Equals(groupId)),
                         ProjectNumber = 1000 + i,
-                        Name = $"Project {GetProjectName(i)}",
-                        Customer = $"Customer {GetCustomerName(i)}",
+                        Name = $"{GetProjectName(i)}",
+                        Customer = $"{GetCustomerName(i)}",
                         Status = ((ProjectStatus)random.Next(0, 4)).ToString(),
                         StartDate = GenerateRandomDate(new DateTime(2024, 1, 1), new DateTime(2024, 12, 31)),
                         EndDate = i % 2 == 0 ? (DateTime?)null : GenerateRandomDate(new DateTime(2024, 6, 1), new DateTime(2025, 12, 31))
@@ -99,7 +102,7 @@ namespace ProjectManagement.Infrastructure.Data.SampleData
                     for (int j = 0; j < numberOfEmployees; j++)
                     {
                         var employee = listEmployees[random.Next(listEmployees.Count)];
-                        project.Employees.Add(employee);
+                        project!.Employees?.Add(employee);
                     }
 
                     listProjects.Add(project);

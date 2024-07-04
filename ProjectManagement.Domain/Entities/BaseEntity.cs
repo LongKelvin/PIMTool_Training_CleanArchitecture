@@ -6,11 +6,11 @@ namespace ProjectManagement.Domain.Entities
     public abstract class BaseEntity
     {
         [Key]
-        public Guid Id { get; protected set; }
+        public Guid Id { get; set; }
 
         [Timestamp]
         [Column(TypeName = "rowversion")]
-        public byte[]? Timestamp { get; protected set; }
+        public byte[]? Timestamp { get; set; }
 
         protected BaseEntity()
         {

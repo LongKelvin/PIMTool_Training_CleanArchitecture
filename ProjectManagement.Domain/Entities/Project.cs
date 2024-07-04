@@ -13,7 +13,7 @@ namespace ProjectManagement.Domain.Entities
         public DateTime? EndDate { get; set; }
 
         public Group? Group { get; set; }
-        public ICollection<Employee>? Employees { get; set; }
+        public virtual ICollection<Employee>? Employees { get; set; }
 
         public Project()
         {
@@ -22,7 +22,7 @@ namespace ProjectManagement.Domain.Entities
             Status = string.Empty;
             Group = new Group();
             Employees = [];
-        } // EF Core requires an empty constructor
+        }
 
         public Project(Guid groupId, int projectNumber, string name, string customer, string status, DateTime startDate)
         {

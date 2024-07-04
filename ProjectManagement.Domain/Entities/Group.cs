@@ -7,7 +7,7 @@
         public string Name { get; set; }
 
         public Employee GroupLeader { get; set; }
-        public ICollection<Project> Projects { get; set; }
+        public virtual ICollection<Project> Projects { get; set; }
 
         public Group()
         {

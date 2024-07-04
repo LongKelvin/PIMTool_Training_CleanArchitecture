@@ -6,6 +6,6 @@ namespace ProjectManagement.Application.Queries.Projects
 {
     public class GetAllProjectQuery : IRequest<IEnumerable<Project>>
     {
-        public bool EnableEagerLoading { get; set; } = false;
+        public Func<IQueryable<Project>, IQueryable<Project>>? Includes { get; set; } = null;
     }
 }
