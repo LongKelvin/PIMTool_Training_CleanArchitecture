@@ -4,7 +4,13 @@
     <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
   </PropertyGroup>
 
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<PropertyGroup>
+		<UseDefaultWindowsCommandLineTool>true</UseDefaultWindowsCommandLineTool>
+		<DefaultWindowsCommandLineTool>pwsh.exe</DefaultWindowsCommandLineTool>
+	</PropertyGroup>
+
+
+	<PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
   </PropertyGroup>
 
@@ -12,6 +18,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>26ad23b1-cd38-48e7-86d7-1edfaccf2ec8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
