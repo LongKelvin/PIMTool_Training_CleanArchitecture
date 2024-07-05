@@ -1,8 +1,10 @@
 ﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 using ProjectManagement.Application.Commands.Projects;
+using ProjectManagement.Application.DTOs;
 using ProjectManagement.Application.Queries.Projects;
 using ProjectManagement.Domain.Entities;
 
@@ -10,29 +12,60 @@ namespace ProjectManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectsController(IMediator mediator) : ControllerBase
+    public class ProjectsController(IMediator mediator, ILogger<ProjectsController> logger) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
 
         [HttpGet]
-        public async Task<ActionResult<Project>> GetAllAsync([FromQuery] bool? enableEagerLoading)
+        public async Task<ActionResult<Project>> GetAllAsync()
         {
-            var projects = await _mediator.Send(
-                new GetAllProjectQuery { Includes = null });
-            if (projects == null)
-                return NotFound();
+            logger.LogInformation("Get all project async ...");
+            var projects = await _mediator.Send(new GetAllProjectQuery { Includes = null });
 
+            logger.LogInformation("Query done!");
             return Ok(projects);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Project>> GetProjectById(Guid id)
         {
-            var project = await _mediator.Send(new GetProjectByIdQuery { Id = id });
+            static IQueryable<Project> includes(IQueryable<Project> p) =>
+            p.Include(project => project.Employees);
+
+            var project = await _mediator.Send(new GetProjectByIdQuery { Id = id, Includes = includes });
             if (project == null)
                 return NotFound();
 
-            return Ok(project);
+            var projectDto = new ProjectDto
+            {
+                Id = project.Id,
+                Timestamp = project.Timestamp,
+                GroupId = project.GroupId,
+                ProjectNumber = project.ProjectNumber,
+                Name = project.Name,
+                Customer = project.Customer,
+                Status = project.Status,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                GroupLeaderVisa = project!.Group?.GroupLeader.Visa!,
+                GroupLeaderName = $"{project!.Group!.GroupLeader.FirstName!} {project!.Group!.GroupLeader.LastName!}"
+            };
+
+            var listEmpDtos = new List<EmployeeDto>();
+            foreach (var emp in project!.Employees!)
+            {
+                listEmpDtos.Add(new EmployeeDto
+                {
+                    Id = emp.Id,
+                    FirstName = emp.FirstName,
+                    LastName = emp.LastName,
+                    Visa = emp.Visa
+                });
+            }
+
+            projectDto.Employees = listEmpDtos;
+
+            return Ok(projectDto);
         }
 
         [HttpGet("search")]

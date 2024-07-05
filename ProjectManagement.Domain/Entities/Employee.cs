@@ -1,5 +1,8 @@
-﻿namespace ProjectManagement.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ProjectManagement.Domain.Entities
 {
+    [Table("Employees")]
     public class Employee : BaseEntity
     {
         public string Visa { get; set; }

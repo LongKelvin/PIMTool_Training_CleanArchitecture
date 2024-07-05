@@ -25,7 +25,6 @@ namespace ProjectManagement.Infrastructure.Repositories
             return await query.SingleOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
 
-
         public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null, CancellationToken cancellationToken = default)
         {
             IQueryable<T> query = _dbSet;
@@ -64,14 +63,6 @@ namespace ProjectManagement.Infrastructure.Repositories
                 _dbSet.Remove(entity);
                 await _context.SaveChangesAsync(cancellationToken);
             }
-        }
-
-        private static IQueryable<T> ApplyIncludes(IQueryable<T> query, string? relatedEntity = null)
-        {
-            if (!string.IsNullOrEmpty(relatedEntity))
-                return query.Include($"{relatedEntity}");
-
-            return query;
         }
     }
 }

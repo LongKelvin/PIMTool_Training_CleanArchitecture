@@ -1,7 +1,10 @@
-﻿using ProjectManagement.Domain.Interfaces;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+using ProjectManagement.Domain.Interfaces;
 
 namespace ProjectManagement.Domain.Entities
 {
+    [Table("Projects")]
     public class Project : BaseEntity, IAggregateRoot
     {
         public Guid GroupId { get; set; }
@@ -12,7 +15,10 @@ namespace ProjectManagement.Domain.Entities
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
+        public DateTime? CreatedDate { get; private set; } = DateTime.Now;
+
         public Group? Group { get; set; }
+
         public virtual ICollection<Employee>? Employees { get; set; }
 
         public Project()

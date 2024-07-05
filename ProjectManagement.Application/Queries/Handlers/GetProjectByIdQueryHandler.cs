@@ -12,7 +12,7 @@ namespace ProjectManagement.Application.Queries.Handlers
 
         public async Task<Project?> Handle(GetProjectByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _projectRepository.GetByIdAsync(request.Id);
+            return await _projectRepository.GetByIdAsync(request.Id, request.Includes, cancellationToken: cancellationToken);
         }
     }
 }

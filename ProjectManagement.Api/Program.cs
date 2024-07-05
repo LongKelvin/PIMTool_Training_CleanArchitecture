@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 using Microsoft.EntityFrameworkCore;
 
 using ProjectManagement.Application.Commands.Projects;
@@ -7,6 +5,8 @@ using ProjectManagement.Application.Interfaces;
 using ProjectManagement.Infrastructure.Data.DataContext;
 using ProjectManagement.Infrastructure.Data.SampleData;
 using ProjectManagement.Infrastructure.Repositories;
+
+using Serilog;
 
 namespace ProjectManagement.Api
 {
@@ -18,19 +18,31 @@ namespace ProjectManagement.Api
         public static void Main(string[] args)
         {
             ConfigureConfiguration();
+
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
 
-            builder.Services.AddControllers()
-             .AddJsonOptions(options =>
-             {
-                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-                 options.JsonSerializerOptions.MaxDepth = 64; // Increase the depth if necessary
-             });
+            //builder.Services.AddControllers()
+            // .AddJsonOptions(options =>
+            // {
+            //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            //     options.JsonSerializerOptions.MaxDepth = 64; // Increase the depth if necessary
+            // });
+
+            builder.Services.AddControllers();
+
+            // Config Serilog
+
+            builder.Host.UseSerilog((context, configuration) =>
+                configuration.ReadFrom.Configuration(context.Configuration));
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+
 
             string connectionString = _configuration!.GetConnectionString("PIMToolDbConnection")!;
             var useInMemoryDatabase = bool.Parse(_configuration!.GetSection("UseInMemoryDatabase").Value!);
@@ -38,12 +50,16 @@ namespace ProjectManagement.Api
             if (useInMemoryDatabase)
             {
                 builder.Services.AddDbContext<PIMToolDbContext>(options =>
-                    options.UseInMemoryDatabase("PIMTool_InMemoryDb"));
+                    options.UseInMemoryDatabase("PIMTool_InMemoryDb")
+                    .LogTo(Console.WriteLine, LogLevel.Information)
+                                   .EnableSensitiveDataLogging());
             }
             else
             {
                 builder.Services.AddDbContext<PIMToolDbContext>(options =>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString($"{connectionString}")));
+                    options.UseSqlServer($"{connectionString}")
+                     .LogTo(Console.WriteLine, LogLevel.Information)
+                                   .EnableSensitiveDataLogging());
             }
 
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -68,7 +84,6 @@ namespace ProjectManagement.Api
                     }
                     else
                     {
-                        dbContext.Database.EnsureCreatedAsync();
                         dbContext.Database.Migrate();
                     }
 
@@ -89,6 +104,8 @@ namespace ProjectManagement.Api
                 app.UseSwaggerUI();
             }
 
+            app.UseSerilogRequestLogging();
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
@@ -102,8 +119,11 @@ namespace ProjectManagement.Api
         {
             //Build configuration
             _configuration = new ConfigurationBuilder()
-                  .AddJsonFile("appsettings.json")
-                  .Build();
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+                .Build();
         }
+
+
     }
 }

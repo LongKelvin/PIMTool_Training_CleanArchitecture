@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectManagement.Infrastructure.Data.DataContext;
 
@@ -11,9 +12,11 @@ using ProjectManagement.Infrastructure.Data.DataContext;
 namespace ProjectManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(PIMToolDbContext))]
-    partial class PIMToolDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240705082711_InitDatabase")]
+    partial class InitDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

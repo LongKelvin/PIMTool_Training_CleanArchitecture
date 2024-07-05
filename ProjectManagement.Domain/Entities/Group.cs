@@ -1,5 +1,8 @@
-﻿namespace ProjectManagement.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ProjectManagement.Domain.Entities
 {
+    [Table("Groups")]
     public class Group : BaseEntity
     {
         public Guid GroupLeaderId { get; set; }
