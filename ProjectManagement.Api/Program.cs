@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using ProjectManagement.Api.Extensions;
 using ProjectManagement.Application.Commands.Projects;
 using ProjectManagement.Application.Interfaces;
 using ProjectManagement.Infrastructure.Data.DataContext;
@@ -44,7 +45,7 @@ namespace ProjectManagement.Api
 
 
 
-            string connectionString = _configuration!.GetConnectionString("PIMToolDbConnection")!;
+            string connectionString = _configuration!.GetConnectionString("PIMToolDbConnection2")!;
             var useInMemoryDatabase = bool.Parse(_configuration!.GetSection("UseInMemoryDatabase").Value!);
 
             if (useInMemoryDatabase)
@@ -65,6 +66,12 @@ namespace ProjectManagement.Api
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProjectCommand).Assembly));
+
+            // Attach console for debugging
+            if (builder.Environment.IsDevelopment() || DebugConsoleWindowHandler.ShouldAttachConsole())
+            {
+                DebugConsoleWindowHandler.AttachConsole();
+            }
 
             var app = builder.Build();
 
@@ -113,6 +120,10 @@ namespace ProjectManagement.Api
             app.MapControllers();
 
             app.Run();
+
+
+            // Close console on exit
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => DebugConsoleWindowHandler.CloseConsole();
         }
 
         public static void ConfigureConfiguration()
