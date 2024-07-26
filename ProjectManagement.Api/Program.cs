@@ -45,7 +45,7 @@ namespace ProjectManagement.Api
 
 
 
-            string connectionString = _configuration!.GetConnectionString("PIMToolDbConnection2")!;
+            string connectionString = _configuration!.GetConnectionString("PIMToolDbConnection")!;
             var useInMemoryDatabase = bool.Parse(_configuration!.GetSection("UseInMemoryDatabase").Value!);
 
             if (useInMemoryDatabase)

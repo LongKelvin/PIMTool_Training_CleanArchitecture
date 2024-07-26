@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ProjectManagement.Application\ProjectManagement.Application.csproj" />
     <ProjectReference Include="..\ProjectManagement.Domain\ProjectManagement.Domain.csproj" />
+    <ProjectReference Include="..\ProjectManagerment.Core\ProjectManagement.Core.csproj" />
   </ItemGroup>
 
 </Project>
